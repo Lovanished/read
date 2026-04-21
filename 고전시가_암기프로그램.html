@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고전시가 암기 프로그램</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f8f7f4;color:#1a1a1a;padding:16px}
+.app{max-width:720px;margin:0 auto;padding-bottom:60px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:7px 16px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;color:#666;cursor:pointer;font-family:inherit}
+.tab.active{background:#dbeafe;color:#1d4ed8;border-color:transparent;font-weight:600}
+.tab:hover:not(.active){background:#f0f0ee}
+.card{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:20px;margin-bottom:12px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;margin-right:4px;margin-bottom:4px;cursor:default}
+.bb{background:#dbeafe;color:#1e40af}.bp{background:#ede9fe;color:#4c1d95}
+.bt{background:#d1fae5;color:#065f46}.ba{background:#fef3c7;color:#78350f}
+.bc{background:#ffe4e6;color:#9f1239}.bk{background:#fce7f3;color:#831843}
+.bg{background:#dcfce7;color:#14532d}.br{background:#fee2e2;color:#7f1d1d}
+.sl{font-size:11px;color:#888;margin-top:10px;margin-bottom:4px;font-weight:600}
+.tw{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.qo{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:14px;color:#1a1a1a;cursor:pointer;font-family:inherit;transition:background .12s}
+.qo:hover:not(:disabled){background:#f5f4f0}
+.qo.ok{background:#dcfce7;border-color:#16a34a;color:#14532d}
+.qo.ng{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.btn{padding:8px 18px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;color:#333;cursor:pointer;font-family:inherit}
+.btn:hover{background:#f0f0ee}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btnp{background:#dbeafe;color:#1d4ed8;border-color:transparent;font-weight:600}
+.btnp:hover{background:#bfdbfe}
+.btnd{background:#fee2e2;color:#9f1239;border-color:transparent}
+.btnd:hover{background:#fecaca}
+input[type=text]{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:#f5f4f0;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px}
+.info{font-size:13px;color:#555;margin-bottom:12px;padding:10px 14px;background:#f5f4f0;border-radius:8px}
+.flip-wrap{perspective:1000px;cursor:pointer;margin-bottom:12px}
+.flip-inner{position:relative;width:100%;min-height:160px;transition:transform .45s;transform-style:preserve-3d}
+.flip-wrap.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-f,.flip-b{position:absolute;width:100%;backface-visibility:hidden;border-radius:12px;border:1px solid #e8e6e0;padding:20px;min-height:160px;background:#fff}
+.flip-b{background:#f8f7f4;transform:rotateY(180deg)}
+.prog{height:6px;border-radius:99px;background:#e8e6e0;overflow:hidden;margin-bottom:20px}
+.pf{height:100%;background:#10b981;border-radius:99px;transition:width .3s}
+.result-ok{color:#14532d;background:#dcfce7;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+.result-ng{color:#7f1d1d;background:#fee2e2;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+.type-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;margin-bottom:8px;cursor:pointer;transition:background .12s}
+.type-toggle:hover{background:#f5f4f0}
+.type-toggle.selected{background:#ede9fe;border-color:#a78bfa}
+.toggle-check{width:18px;height:18px;border-radius:4px;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;background:#fff}
+.toggle-check.on{background:#7c3aed;border-color:#7c3aed}
+.tag-chip{display:inline-block;font-size:12px;padding:4px 10px;border:1px solid #ddd;background:#f5f4f0;color:#555;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .12s}
+.tag-chip:hover{background:#e0e7ff;border-color:#818cf8;color:#3730a3}
+.tag-chip.active{background:#dbeafe;border-color:#3b82f6;color:#1e40af;font-weight:600}
+.tag-group-label{font-size:11px;color:#888;font-weight:600;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.rel-tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;background:#ede9fe;color:#4c1d95;cursor:pointer;margin-right:4px;margin-bottom:4px;border:none;font-family:inherit}
+.rel-tag:hover{background:#ddd6fe}
+.work-tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;background:#d1fae5;color:#065f46;cursor:pointer;margin-right:4px;margin-bottom:4px;border:none;font-family:inherit}
+.work-tag:hover{background:#a7f3d0}
+</style>
+</head>
+<body>
+<div class="app">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+  <span style="font-size:20px">📚</span>
+  <span style="font-size:18px;font-weight:700">고전시가 암기 프로그램</span>
+</div>
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="switchTab('browse')">작품 목록</button>
+  <button class="tab" onclick="switchTab('flash')">플래시카드</button>
+  <button class="tab" onclick="switchTab('quiz')">매칭 퀴즈</button>
+  <button class="tab" onclick="switchTab('tag')">태그 탐색</button>
+</div>
+<div id="tab-browse"></div>
+<div id="tab-flash" style="display:none"></div>
+<div id="tab-quiz" style="display:none"></div>
+<div id="tab-tag" style="display:none"></div>
+</div>
+
+<script>
+const W=[
+  {id:1,title:"원가",author:"신충",set:"Set 1",type:"10구체 향가(추정)",genre:"향가",themes:["염원","주술적","원망","이별"],subject:"약속을 저버린 임을 원망하는 마음",keywords:[{k:"잣나무",v:"임과 함께했던 시절 회상의 매개"},{k:"낯이 변해 버리신 겨울",v:"차갑게 느껴지는 임의 모습"},{k:"지나가는 물결에 대한 모래",v:"떠나는 임을 바라보기만 하는 화자"},{k:"세상 모든 것 여희여 버린 처지",v:"임으로 인한 절망감·실망감"}],tags:["자연물비유","대조적심상","영탄","직접인용"],bc:"bc",st:[{l:"1~4구",d:"임의 변심"},{l:"5~8구",d:"괴로운 화자의 심정"}]},
+  {id:2,title:"진중음",author:"이순신",set:"Set 1",type:"한시 — 오언 율시",genre:"한시",themes:["우국충정","태평 염원","전원생활","선비의 마음"],subject:"태평한 나라를 염원하며 명성에 연연하지 않고 전원생활을 꿈꿈",keywords:[{k:"많은 사람들",v:"이순신 명성을 시기·질투, 업적 깎아내리려 함"},{k:"온 세상",v:"업적 늘며 자연스럽게 이름이 알려짐"}],tags:["대조(조정질투↔백성신망)","인용(귀거래사)"],bc:"bb",st:[{l:"기",d:"바다 누각에 홀로 앉아 고민"},{l:"승",d:"국난 극복해 태평 회복 바람"},{l:"전",d:"이름 알려짐, 시기하는 사람 행태"},{l:"결",d:"전쟁 승리 후 평화로운 전원생활 염원"}]},
+  {id:3,title:"만전춘별사",author:"작자미상",set:"Set 2",type:"고려가요",genre:"고려가요",themes:["남녀상열지사","과장","비유","이별"],subject:"임과의 사랑이 영원하기를 소망함",keywords:[{k:"동일한 문장 반복",v:"임에 대한 사랑과 그리움 강조"},{k:"객관적상관물 — 도화",v:"임과 이별한 화자의 처지"},{k:"정 둔 오늘 밤 더디 새오시라",v:"물리적 시간 변화 희망"},{k:"넋이라도 임을 한데 지내겠다",v:"이별로 인한 힘겨움과 그리움"}],tags:["분연체","독립시상","대조(고침상↔도화)","차용(정과정)","반복"],bc:"bc",st:[{l:"1연",d:"임에 대한 사랑의 의지"},{l:"2연",d:"임의 부재에 대한 외로움"},{l:"3연",d:"관계가 어긋난 것에 대한 원망"},{l:"4연",d:"임에 대한 그리움, 기다림"}]},
+  {id:4,title:"내 영혼 술에 섞여~",author:"김삼현",set:"Set 2",type:"평시조",genre:"시조",themes:["임에 대한 원망","기발한 발상"],subject:"자신 잊고 다른 이 생각하는 임을 원망하며 마음 태우기",keywords:[{k:"독백적 진술",v:"임의 마음을 태우고 싶다는 바람"},{k:"영탄적 표현",v:"임을 향한 화자의 마음"},{k:"영혼을 술에 섞어",v:"추상적 대상을 물리적 변화 가능 대상으로 사물화"}],tags:["기발한발상","변신모티프","음성상징어(굽이굽이)","대조(날잊고↔남향한)"],bc:"bt",st:[{l:"초장",d:"영혼을 술에 섞어 임의 마음속에 들어감"},{l:"중장",d:"임의 마음속을 굽이굽이 찾아다님"},{l:"종장",d:"임의 마음을 태우려 함"}]},
+  {id:5,title:"창밖에 가마솥 때우라는 장사~",author:"작자미상",set:"Set 2",type:"사설시조",genre:"시조",themes:["이별","해학","대화체"],subject:"임과의 이별을 사물화해 그리움과 슬픔 표현",keywords:[{k:"물음의 방식",v:"부정적 상황을 극복하고 싶은 바람"},{k:"역사적 인물 나열",v:"임과의 이별 막을 수 없음 강조"},{k:"이별 나는 구멍도 때우는가",v:"이별을 수선 가능 대상으로 사물화"}],tags:["대화형식(문답법)","추상적관념구체화","고사인용","열거","해학적발상"],bc:"ba",st:[{l:"초장",d:"이별 구멍을 때울 수 있냐는 질문"},{l:"중장",d:"이별 구멍은 누구도 때울 수 없다는 대답"},{l:"종장",d:"오랫동안 이별해야 하는 나의 한탄"}]},
+  {id:6,title:"월곡답가",author:"정훈",set:"Set 3",type:"연시조 — 10수",genre:"시조",themes:["존경인물그리움","현실비판"],subject:"월곡을 이상적 지표로 설정하여 그리움과 현실 비판적 인식 표현",keywords:[{k:"뫼는 첩첩 구름은 잦았으니",v:"화자와 월곡 사이의 물리적 단절감"},{k:"속세와 자연 간의 단절감",v:"신선 모티프를 통해 표현됨"}],tags:["대조적상황","대구","설의","고사인용","도교적색채","예찬적"],bc:"bk",st:[{l:"1수",d:"벗을 그리워하는 마음"},{l:"2수",d:"나를 알아봐 주는 벗"},{l:"4수",d:"욕심 없는 삶을 사는 벗 예찬"},{l:"9·10수",d:"신선세계 동경, 세상 초탈"}]},
+  {id:7,title:"두류산 양단수를~",author:"조식",set:"Set 4",type:"시조",genre:"시조",themes:["자연예찬","선경"],subject:"지리산 경치를 무릉도원 선경에 빗대어 예찬",keywords:[{k:"시간 — 예/이제",v:"청각(들음) → 시각(직접 봄)으로 이행"},{k:"옌가 하노라",v:"직접 보고 무릉도원이 이곳인가 여김"}],tags:["대비(청각↔시각)","자문자답","돈호법","예찬","영탄"],bc:"bt",st:[{l:"초장",d:"두류산 양단수를 봄"},{l:"중장",d:"양단수의 아름다움"},{l:"종장",d:"무릉도원으로 여김"}]},
+  {id:8,title:"요일월 순건곤은~",author:"김천택",set:"Set 4",type:"시조",genre:"시조",themes:["태평성대","늦게태어난탄식"],subject:"요순시대 천지는 그대로이나 세상 달라져 늦게 태어남을 탄식",keywords:[{k:"대비를 통한 시상 전개",v:"과거(요순시절 자연) vs 현재(달라진 세상)"},{k:"화자의 정서",v:"시대를 잘 만나지 못한 것에 대한 슬픔"}],tags:["대유법","대조(자연↔인간)","설의"],bc:"bp",st:[{l:"초장",d:"요순시절의 자연은 그대로"},{l:"중장",d:"변함없는 자연과 달리 인세는 달라짐"},{l:"종장",d:"불우한 시대에 태어남을 슬퍼함"}]},
+  {id:9,title:"대장부 공 이루고~",author:"작자미상",set:"Set 4",type:"사설시조",genre:"시조",themes:["대장부삶","충만감","전원"],subject:"대장부가 공 이룬 후 물러나 사는 삶의 모습 열거를 통해 충만감 표현",keywords:[{k:"시간의 흐름에 따른 시상 전개",v:"공 이루고 물러난 후 삶 순행적 표현"},{k:"행위의 열거",v:"만족감 강조"},{k:"사대부의 이중 지향",v:"사회적 자아(공적 역할) + 개인적 자아(전원 풍류)"}],tags:["중장나열(장형화)","시간의흐름","과장(향락적은거↔소박한삶)"],bc:"bc",st:[{l:"초장",d:"대장부가 공을 이룬 후의 상황"},{l:"중장",d:"임천에 초당 짓고 남풍시 노래"},{l:"종장",d:"평화로운 삶에 대한 지극한 만족감"}]},
+  {id:10,title:"눈 맞아 휘어진 대를~",author:"원천석",set:"Set 5",type:"평시조",genre:"시조",themes:["절의","고려유신","대나무"],subject:"추운 계절에도 혼자 지키는 절개",keywords:[{k:"눈",v:"시련·고난 / 새 왕조의 압제"},{k:"대",v:"지조·절개 / 충신·고려 유신"}],tags:["상징(대·눈)","설의","의인(대나무)","색채대비(흰↔푸른)","고려유신"],bc:"bb",st:[{l:"초장",d:"눈을 맞아 휘어진 대나무"},{l:"중장",d:"눈 속에서도 푸르른 대나무"},{l:"종장",d:"대나무의 절개 예찬"}]},
+  {id:11,title:"연못에 비 오는 소리~",author:"작자미상",set:"Set 5",type:"평시조",genre:"시조",themes:["임그리움","꿈","청각적이미지"],subject:"사랑하는 임을 만나지 못하는 아쉬움과 슬픔",keywords:[{k:"비",v:"슬픔·눈물 이미지 / 꿈을 방해하는 장애물"},{k:"꿈",v:"임을 보러 가는 비현실적 통로"},{k:"청각적 이미지",v:"빗소리에 깨어나는 발상"}],tags:["은유(빗방울↔구슬)","직유(눈물흐르는듯)","설의"],bc:"ba",st:[{l:"초장",d:"연못에 비 오는 소리"},{l:"중장",d:"꿈에 임을 만나려 하나 빗소리에 깨어남"},{l:"종장",d:"임을 만나지 못한 슬픔"}]},
+  {id:12,title:"임으란 회양 금성 오리나무 되고~",author:"이정보",set:"Set 5",type:"사설시조",genre:"시조",themes:["사랑","변신모티프","결합"],subject:"임과의 강력한 결합이 지속되기를 바람",keywords:[{k:"오리나무",v:"임 — 뿌리 깊고 곧게 자람"},{k:"칡넝쿨",v:"화자 — 오리나무를 감고 올라감"},{k:"납거미·나비",v:"나비를 그물로 감싸 — 결합의 비유"},{k:"변신 모티프",v:"한계적 상황 극복, 영원한 사랑 지속 바람"}],tags:["추상적감정구체적사물로","유사시구반복","비유(은유·직유)","음성상징어","설의"],bc:"bk",st:[{l:"초장",d:"오리나무가 된 임과 칡넝쿨이 된 화자"},{l:"중장",d:"임과 결속되어 항상 붙어 살고 싶은 심정"},{l:"종장",d:"시련 속에서도 변하지 않는 사랑"}]}
+];
+
+/* ── 태그 유사성 그래프 ── */
+const TAG_GROUPS = {
+  "비유·상징": ["자연물비유","비유(은유·직유)","은유(빗방울↔구슬)","직유(눈물흐르는듯)","상징(대·눈)","추상적관념구체화","추상적감정구체적사물로","객관적상관물"],
+  "대조·대비": ["대조적심상","대조(조정질투↔백성신망)","대조(고침상↔도화)","대조(날잊고↔남향한)","대조(자연↔인간)","대조적상황","대비(청각↔시각)","색채대비(흰↔푸른)"],
+  "반복·강조": ["반복","유사시구반복","열거","중장나열(장형화)","영탄","음성상징어(굽이굽이)","음성상징어"],
+  "인용·고사": ["직접인용","인용(귀거래사)","고사인용","차용(정과정)"],
+  "설의·문답": ["설의","대화형식(문답법)","자문자답"],
+  "화자의 정서": ["영탄","예찬적","예찬","고려유신","도교적색채"],
+  "발상·모티프": ["기발한발상","변신모티프","해학적발상"],
+  "시상 구조": ["분연체","독립시상","시간의흐름","대구","돈호법","의인(대나무)","대유법"],
+};
+
+function sh(a){return[...a].sort(()=>Math.random()-.5)}
+function rnd(a){return a.length?a[Math.floor(Math.random()*a.length)]:null}
+
+/* ── 퀴즈 유형 정의 ── */
+const QTYPES=[
+  {id:"qt1",label:"작품 → 주제",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const wr=sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>x.subject);if(wr.length<3)return null;
+    return{q:`<b>${w.title}</b> (${w.author})의 주제는?`,ans:w.subject,opts:sh([w.subject,...wr]),ex:`${w.title}의 주제: ${w.subject}`,wid:w.id};
+  }},
+  {id:"qt2",label:"주제 → 작품",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>`${x.title} (${x.author})`);if(wr.length<3)return null;
+    return{q:`주제 <i>"${w.subject}"</i>에 해당하는 작품은?`,ans:c,opts:sh([c,...wr]),ex:`정답: ${w.title} by ${w.author}`,wid:w.id};
+  }},
+  {id:"qt3",label:"소재 → 작품",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const kw=w.keywords[Math.floor(Math.random()*w.keywords.length)];
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>`${x.title} (${x.author})`);if(wr.length<3)return null;
+    return{q:`핵심 소재 <b>'${kw.k}'</b>가 등장하는 작품은?<br><small style="color:#666">${kw.v}</small>`,ans:c,opts:sh([c,...wr]),ex:`'${kw.k}'는 ${w.title} (${w.author})에 등장합니다.`,wid:w.id};
+  }},
+  {id:"qt4",label:"소재 → 의미",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const kw=w.keywords[Math.floor(Math.random()*w.keywords.length)];
+    const all=W.flatMap(x=>x.keywords).filter(k=>k.k!==kw.k);
+    const wr=sh(all).slice(0,3).map(k=>k.v);if(wr.length<3)return null;
+    return{q:`<b>${w.title}</b>에서 <b>'${kw.k}'</b>의 의미는?`,ans:kw.v,opts:sh([kw.v,...wr]),ex:`'${kw.k}'의 의미: ${kw.v}`,wid:w.id};
+  }},
+  {id:"qt5",label:"태그 → 작품",cat:"표현",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const tag=w.tags[Math.floor(Math.random()*w.tags.length)];
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id&&!x.tags.includes(tag))).slice(0,3).map(x=>`${x.title} (${x.author})`);if(wr.length<3)return null;
+    return{q:`표현 기법 <b>#${tag}</b>이(가) 사용된 작품은?`,ans:c,opts:sh([c,...wr]),ex:`#${tag} 기법: ${w.title} (${w.author})`,wid:w.id};
+  }},
+  {id:"qt6",label:"갈래 → 작품",cat:"기본",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id&&x.type!==w.type)).slice(0,3).map(x=>`${x.title} (${x.author})`);
+    const fw=wr.length>=3?wr:sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>`${x.title} (${x.author})`);
+    if(fw.length<3)return null;
+    return{q:`갈래가 <b>'${w.type}'</b>인 작품은?`,ans:c,opts:sh([c,...fw]),ex:`${w.title}의 갈래: ${w.type}`,wid:w.id};
+  }},
+  {id:"qt7",label:"작가 → 작품",cat:"기본",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const wr=sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>x.title);if(wr.length<3)return null;
+    return{q:`<b>${w.author}</b>이(가) 지은 작품은?`,ans:w.title,opts:sh([w.title,...wr]),ex:`${w.author}의 작품: ${w.title}`,wid:w.id};
+  }},
+  {id:"qt8",label:"작품 → 작가",cat:"기본",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const all=[...new Set(W.map(x=>x.author))];
+    const wr=sh(all.filter(a=>a!==w.author)).slice(0,3);if(wr.length<3)return null;
+    return{q:`<b>${w.title}</b>의 작가는?`,ans:w.author,opts:sh([w.author,...wr]),ex:`${w.title}의 작가: ${w.author}`,wid:w.id};
+  }},
+  {id:"qt9",label:"작품 → 갈래",cat:"기본",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const all=[...new Set(W.map(x=>x.type))];
+    const wr=sh(all.filter(t=>t!==w.type)).slice(0,3);if(wr.length<3)return null;
+    return{q:`<b>${w.title}</b> (${w.author})의 갈래는?`,ans:w.type,opts:sh([w.type,...wr]),ex:`${w.title}의 갈래: ${w.type}`,wid:w.id};
+  }},
+  {id:"qt10",label:"구성 → 작품",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const st=w.st[Math.floor(Math.random()*w.st.length)];
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id)).slice(0,3).map(x=>`${x.title} (${x.author})`);if(wr.length<3)return null;
+    return{q:`<b>${st.l}</b>에서 <i>"${st.d}"</i>가 나타나는 작품은?`,ans:c,opts:sh([c,...wr]),ex:`${w.title} — ${st.l}: ${st.d}`,wid:w.id};
+  }},
+  {id:"qt11",label:"정서·태도 → 작품",cat:"이해",gen(pool){
+    const w=rnd(pool);if(!w)return null;
+    const theme=w.themes[Math.floor(Math.random()*w.themes.length)];
+    const c=`${w.title} (${w.author})`;
+    const wr=sh(W.filter(x=>x.id!==w.id&&!x.themes.includes(theme))).slice(0,3).map(x=>`${x.title} (${x.author})`);if(wr.length<3)return null;
+    return{q:`화자의 정서·태도가 <b>'${theme}'</b>에 해당하는 작품은?`,ans:c,opts:sh([c,...wr]),ex:`'${theme}' 정서: ${w.title} (${w.author})`,wid:w.id};
+  }}
+];
+
+/* ── 퀴즈 상태 ── */
+let selectedTypes = new Set(QTYPES.map(t=>t.id)); // 처음엔 전체 선택
+let QS={pool:[],round:1,answered:null,cur:null,correct:0,total:0};
+let activeSetB="전체";
+let flashIdx=0;let flashFlip=false;
+
+function switchTab(t){
+  ["browse","flash","quiz","tag"].forEach(n=>document.getElementById("tab-"+n).style.display=n===t?"block":"none");
+  document.querySelectorAll("#tabs .tab").forEach((el,i)=>el.classList.toggle("active",["browse","flash","quiz","tag"][i]===t));
+  if(t==="browse")renderBrowse();
+  if(t==="flash")renderFlash();
+  if(t==="quiz")renderQuiz();
+  if(t==="tag")renderTag();
+}
+
+/* ═══ 작품 목록 ═══ */
+function renderBrowse(){
+  const sets=["전체","Set 1","Set 2","Set 3","Set 4","Set 5"];
+  let h=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">`;
+  sets.forEach(s=>h+=`<button class="tab${s===activeSetB?" active":""}" onclick="activeSetB='${s}';renderBrowse()">${s}</button>`);
+  h+=`</div><input type="text" id="bs" placeholder="작품명, 작가, 주제, 태그 검색..." oninput="renderBrowseList()"/><div id="bl"></div>`;
+  document.getElementById("tab-browse").innerHTML=h;
+  renderBrowseList();
+}
+function renderBrowseList(){
+  const q=(document.getElementById("bs")?.value||"").trim().toLowerCase();
+  const ws=(activeSetB==="전체"?W:W.filter(w=>w.set===activeSetB)).filter(w=>!q||w.title.includes(q)||w.author.includes(q)||w.subject.includes(q)||w.tags.some(t=>t.includes(q)));
+  let h="";
+  ws.forEach(w=>{
+    h+=`<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <div><div style="font-size:15px;font-weight:700;margin-bottom:4px">${w.title}</div><div style="font-size:13px;color:#666;margin-bottom:10px">${w.author} · ${w.type}</div></div>
+        <span class="badge ${w.bc}">${w.set}</span>
+      </div>
+      <div class="sl">주제</div><div style="font-size:13px;line-height:1.6;margin-bottom:8px">${w.subject}</div>
+      <div class="sl">핵심 소재</div><div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:8px">${w.keywords.map(k=>`<b style="color:#1a1a1a">${k.k}</b> — ${k.v}`).join("<br>")}</div>
+      <div class="sl">구성</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${w.st.map(s=>`<span class="badge bb">${s.l}</span><span style="font-size:12px;color:#666;margin-right:6px">${s.d}</span>`).join("")}</div>
+      <div class="tw">${w.tags.map(t=>`<button class="tag-chip" onclick="goTagSearch('${t.replace(/'/g,"\\'")}')">#${t}</button>`).join("")}</div>
+    </div>`;
+  });
+  document.getElementById("bl").innerHTML=h||`<div style="color:#aaa;font-size:14px;padding:2rem 0;text-align:center">검색 결과 없음</div>`;
+}
+function goTagSearch(tag){switchTab('tag');setTimeout(()=>renderTagDetail(tag),50);}
+
+/* ═══ 플래시카드 ═══ */
+function renderFlash(){
+  const w=W[flashIdx];
+  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+    <span style="font-size:22px;font-weight:700">${flashIdx+1}<span style="font-size:14px;font-weight:400;color:#666"> / ${W.length}</span></span>
+  </div>
+  <div class="prog"><div class="pf" style="width:${Math.round((flashIdx+1)/W.length*100)}%"></div></div>
+  <div class="flip-wrap${flashFlip?" flipped":""}" id="fc" onclick="flashFlip=!flashFlip;renderFlash()">
+    <div class="flip-inner">
+      <div class="flip-f">
+        <div style="display:flex;gap:6px;margin-bottom:12px"><span class="badge ${w.bc}">${w.set}</span><span class="badge bb">${w.type}</span></div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:6px">${w.title}</div>
+        <div style="font-size:14px;color:#666">작가: ${w.author}</div>
+        <div style="font-size:12px;color:#aaa;margin-top:20px">카드를 클릭하면 뒤집어져요</div>
+      </div>
+      <div class="flip-b">
+        <div style="font-size:12px;color:#888;margin-bottom:6px">주제</div>
+        <div style="font-size:14px;margin-bottom:10px;line-height:1.6">${w.subject}</div>
+        <div style="font-size:12px;color:#888;margin-bottom:6px">핵심 소재</div>
+        <div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:8px">${w.keywords.slice(0,2).map(k=>`<b style="color:#1a1a1a">${k.k}</b> — ${k.v}`).join("<br>")}</div>
+        <div class="tw">${w.tags.slice(0,4).map(t=>`<span class="badge bt">#${t}</span>`).join("")}</div>
+      </div>
+    </div>
+  </div>
+  <div style="min-height:160px"></div>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+    <button class="btn" onclick="flashIdx=Math.max(0,flashIdx-1);flashFlip=false;renderFlash()" ${flashIdx===0?"disabled":""}>← 이전</button>
+    <button class="btn btnp" onclick="flashIdx=Math.min(W.length-1,flashIdx+1);flashFlip=false;renderFlash()" ${flashIdx===W.length-1?"disabled":""}>다음 →</button>
+    <button class="btn" onclick="flashIdx=Math.floor(Math.random()*W.length);flashFlip=false;renderFlash()" style="margin-left:auto">섞기</button>
+  </div>`;
+  document.getElementById("tab-flash").innerHTML=h;
+}
+
+/* ═══ 매칭 퀴즈 ═══ */
+function nextQ(){
+  if(QS.pool.length===0){QS.pool=sh([...W]);QS.round++;}
+  const active=QTYPES.filter(t=>selectedTypes.has(t.id));
+  if(!active.length)return false;
+  let q=null,tries=0;
+  while(!q&&tries<50){const t=active[Math.floor(Math.random()*active.length)];const r=t.gen(QS.pool);if(r){q=r;q.label=t.label;}tries++;}
+  if(!q)return false;
+  QS.cur=q;QS.answered=null;return true;
+}
+
+function renderQuiz(){
+  const el=document.getElementById("tab-quiz");
+  if(!QS.cur){
+    renderQuizSetup();
+    return;
+  }
+  const q=QS.cur;
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <div class="info" style="margin-bottom:0;flex:1">라운드 ${QS.round} &nbsp;·&nbsp; 남은 작품 <b>${QS.pool.length}</b>/${W.length} &nbsp;·&nbsp; 정답 <b style="color:#065f46">${QS.correct}</b>/${QS.total}</div>
+    <button class="btn" onclick="QS.cur=null;renderQuiz()" style="font-size:12px;padding:6px 12px">유형 설정</button>
+  </div>
+  <div style="margin-bottom:10px"><span class="badge bp">${q.label}</span></div>
+  <div class="card">
+    <div style="font-size:15px;margin-bottom:14px;line-height:1.7">${q.q}</div>`;
+  q.opts.forEach(opt=>{
+    let cls="qo";
+    if(QS.answered!==null){if(opt===q.ans)cls+=" ok";else if(opt===QS.answered)cls+=" ng";}
+    h+=`<button class="${cls}" onclick="answerQ(this)" data-opt="${opt.replace(/"/g,'&quot;')}" ${QS.answered!==null?"disabled":""}>${opt}</button>`;
+  });
+  if(QS.answered!==null){
+    const ok=QS.answered===q.ans;
+    h+=`<div class="${ok?'result-ok':'result-ng'}">${ok?"✓ 정답! ":"✗ 오답. "}${q.ex}</div>`;
+  }
+  h+=`</div>`;
+  if(QS.answered!==null){
+    h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btnp" onclick="goNext()">다음 문제 →</button>
+      <button class="btn" onclick="QS={pool:[],round:1,answered:null,cur:null,correct:0,total:0};renderQuiz()" style="margin-left:auto">처음으로</button>
+    </div>`;
+  }
+  el.innerHTML=h;
+}
+
+function renderQuizSetup(){
+  const cats=["기본","이해","표현"];
+  const catLabel={"기본":"📋 기본 정보","이해":"💡 작품 이해","표현":"✏️ 표현 기법"};
+  const selCount=selectedTypes.size;
+  let h=`<div class="card" style="padding:20px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">문제 유형 선택</div>
+    <div style="font-size:13px;color:#666;margin-bottom:16px">선택된 유형 <b style="color:#1d4ed8">${selCount}</b> / ${QTYPES.length} &nbsp;·&nbsp; 맞춘 작품은 전체 소진 후 다음 라운드 재등장</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn" onclick="selectedTypes=new Set(QTYPES.map(t=>t.id));renderQuizSetup()">전체 선택</button>
+      <button class="btn" onclick="selectedTypes=new Set();renderQuizSetup()">전체 해제</button>
+      ${cats.map(c=>`<button class="btn" onclick="toggleCat('${c}')">${catLabel[c].split(" ").slice(1).join(" ")} 전체선택</button>`).join("")}
+    </div>`;
+  cats.forEach(cat=>{
+    h+=`<div class="tag-group-label">${catLabel[cat]}</div>`;
+    QTYPES.filter(t=>t.cat===cat).forEach(t=>{
+      const on=selectedTypes.has(t.id);
+      h+=`<div class="type-toggle${on?" selected":""}" onclick="toggleType('${t.id}')">
+        <span style="font-size:14px">${t.label}</span>
+        <div class="toggle-check${on?" on":""}">${on?"✓":""}</div>
+      </div>`;
+    });
+  });
+  h+=`</div>
+  <div style="margin-top:16px">
+    <button class="btn btnp" onclick="startQuiz()" ${selCount===0?"disabled":""} style="width:100%;padding:12px;font-size:14px">
+      ${selCount===0?"유형을 1개 이상 선택하세요":QS.correct+QS.total>0?"이어서 풀기 →":"퀴즈 시작하기"}
+    </button>
+    ${QS.correct+QS.total>0?`<button class="btn btnd" onclick="QS={pool:sh([...W]),round:1,answered:null,cur:null,correct:0,total:0};startQuiz()" style="width:100%;padding:10px;font-size:13px;margin-top:8px">처음부터 다시 시작</button>`:""}
+  </div>`;
+  document.getElementById("tab-quiz").innerHTML=h;
+}
+
+function toggleType(id){
+  if(selectedTypes.has(id))selectedTypes.delete(id);else selectedTypes.add(id);
+  renderQuizSetup();
+}
+function toggleCat(cat){
+  const ids=QTYPES.filter(t=>t.cat===cat).map(t=>t.id);
+  const allOn=ids.every(id=>selectedTypes.has(id));
+  ids.forEach(id=>allOn?selectedTypes.delete(id):selectedTypes.add(id));
+  renderQuizSetup();
+}
+function startQuiz(){
+  if(!QS.pool.length){QS.pool=sh([...W]);QS.round=1;QS.correct=0;QS.total=0;}
+  nextQ();renderQuiz();
+}
+function answerQ(btn){
+  if(QS.answered!==null)return;
+  const opt=btn.dataset.opt;
+  QS.answered=opt;QS.total++;
+  if(opt===QS.cur.ans){QS.correct++;QS.pool=QS.pool.filter(w=>w.id!==QS.cur.wid);}
+  renderQuiz();
+}
+function goNext(){nextQ();renderQuiz();}
+
+/* ═══ 태그 탐색 ═══ */
+let activeTagGroup="전체";
+let activeTag=null;
+
+function renderTag(){
+  const allTags=[...new Set(W.flatMap(w=>w.tags))].sort();
+  const groups=["전체",...Object.keys(TAG_GROUPS)];
+  let h=`<div style="font-size:16px;font-weight:700;margin-bottom:12px">태그 탐색</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">`;
+  groups.forEach(g=>h+=`<button class="tab${g===activeTagGroup?" active":""}" onclick="activeTagGroup='${g}';renderTag()">${g}</button>`);
+  h+=`</div>`;
+
+  let showTags=allTags;
+  if(activeTagGroup!=="전체"){
+    showTags=(TAG_GROUPS[activeTagGroup]||[]).filter(t=>allTags.includes(t));
+  }
+
+  h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px">`;
+  showTags.forEach(t=>h+=`<button class="tag-chip${activeTag===t?" active":""}" onclick="renderTagDetail('${t.replace(/'/g,"\\'")}')">#${t}</button>`);
+  h+=`</div><div id="tr">`;
+
+  if(activeTag&&showTags.includes(activeTag)){
+    h+=buildTagDetail(activeTag);
+  } else {
+    h+=`<div style="color:#aaa;font-size:14px">태그를 클릭하면 상세 정보가 표시됩니다</div>`;
+  }
+  h+=`</div>`;
+  document.getElementById("tab-tag").innerHTML=h;
+}
+
+function renderTagDetail(tag){
+  activeTag=tag;
+  // 그룹 전환
+  for(const [g,tags] of Object.entries(TAG_GROUPS)){
+    if(tags.includes(tag)){activeTagGroup=g;break;}
+  }
+  renderTag();
+  // 스크롤
+  setTimeout(()=>{const el=document.getElementById("tr");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},80);
+}
+
+function buildTagDetail(tag){
+  const works=W.filter(w=>w.tags.some(t=>t===tag));
+
+  // 유사 태그: 같은 그룹 내 태그 + 공동 작품에 붙은 다른 태그
+  let groupTags=[];
+  for(const [g,tags] of Object.entries(TAG_GROUPS)){
+    if(tags.includes(tag)){groupTags=tags.filter(t=>t!==tag&&[...new Set(W.flatMap(w=>w.tags))].includes(t));break;}
+  }
+  const coTags=[...new Set(works.flatMap(w=>w.tags).filter(t=>t!==tag&&!groupTags.includes(t)))];
+
+  let h=`<div style="background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:20px;margin-bottom:12px">`;
+  h+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+    <span class="tag-chip active" style="font-size:13px;padding:5px 14px">#${tag}</span>
+    <span style="font-size:13px;color:#888">${works.length}개 작품에서 사용</span>
+  </div>`;
+
+  // 같은 그룹 태그
+  if(groupTags.length){
+    h+=`<div class="sl">같은 유형의 기법 (${Object.keys(TAG_GROUPS).find(g=>TAG_GROUPS[g].includes(tag))||""})</div>`;
+    h+=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">`;
+    groupTags.forEach(t=>h+=`<button class="rel-tag" onclick="renderTagDetail('${t.replace(/'/g,"\\'")}')">#${t}</button>`);
+    h+=`</div>`;
+  }
+
+  // 함께 자주 쓰인 태그
+  if(coTags.length){
+    h+=`<div class="sl">이 작품들에 함께 쓰인 태그</div>`;
+    h+=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">`;
+    coTags.slice(0,10).forEach(t=>h+=`<button class="work-tag" onclick="renderTagDetail('${t.replace(/'/g,"\\'")}')">#${t}</button>`);
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
+  // 해당 작품들
+  h+=`<div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#333">#${tag} 사용 작품</div>`;
+  works.forEach(w=>{
+    h+=`<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span class="badge ${w.bc}">${w.set}</span>
+        <span style="font-size:14px;font-weight:700">${w.title}</span>
+        <span style="font-size:13px;color:#666">— ${w.author} · ${w.type}</span>
+      </div>
+      <div style="font-size:13px;color:#555;margin-bottom:8px">${w.subject}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${w.tags.map(t=>`<button class="tag-chip${t===tag?" active":""}" onclick="renderTagDetail('${t.replace(/'/g,"\\'")}')">#${t}</button>`).join("")}
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+/* ── 초기화 ── */
+renderBrowse();
+</script>
+</body>
+</html>
