@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문제 출제 프로그램</title>
+    <style>
+        /* 기본 스타일 및 레이아웃 */
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f4f6f9; color: #333; }
+        .container { background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .hidden { display: none !important; }
+        h1, h2 { text-align: center; color: #222; margin-top: 0; }
+        
+        /* 이미지 스타일 */
+        .img-box { text-align: center; margin: 15px 0; }
+        img { max-width: 100%; height: auto; border: 1px solid #e0e0e0; border-radius: 6px; }
+        
+        /* 선지 스타일 */
+        .options-container { margin: 20px 0; }
+        .option-label { display: block; padding: 12px 15px; margin: 8px 0; background: #f8f9fa; border: 1px solid #eee; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .option-label:hover { background: #e9ecef; }
+        .option-label input { margin-right: 10px; }
+        
+        /* 버튼 스타일 */
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; background: #007bff; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:hover { background: #0056b3; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #5a6268; }
+        
+        /* 상단 상태창 (타이머 등) */
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        .timer { font-size: 16px; font-weight: bold; color: #dc3545; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
+        .badge-easy { background-color: #28a745; }
+        .badge-hard { background-color: #dc3545; }
+        
+        /* 결과 화면 */
+        .result-box { text-align: center; font-size: 22px; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 6px; }
+        .correct { color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; }
+        .incorrect { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; }
+        .time-info { text-align: center; font-size: 16px; color: #666; margin-bottom: 20px; }
+        
+        /* 설정 그룹 */
+        .setting-group { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .setting-group label { font-weight: bold; display: inline-block; margin-bottom: 8px; }
+        .select-input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="setup-section">
+        <h1>📝 문제 출제 시스템</h1>
+        
+        <div class="setting-group">
+            <label>출제 방식 선택</label><br>
+            <input type="radio" name="mode" value="full-random" id="mode-full" checked> <label for="mode-full">Full 랜덤</label><br>
+            <input type="radio" name="mode" value="chapter-random" id="mode-chapter"> <label for="mode-chapter">선택 단원 내 랜덤</label><br>
+            <input type="radio" name="mode" value="manual" id="mode-manual"> <label for="mode-manual">직접 선택 (문제 고유 ID)</label>
+        </div>
+
+        <div id="chapter-select-box" class="setting-group hidden">
+            <label for="chapter-select">단원 선택</label>
+            <select id="chapter-select" class="select-input">
+                <option value="banana">바나나 (banana)</option>
+                <option value="apple">사과 (apple)</option>
+            </select>
+        </div>
+
+        <div id="manual-select-box" class="setting-group hidden">
+            <label for="manual-id">문제 고유 ID 입력 (숫자)</label>
+            <input type="number" id="manual-id" class="select-input" min="1" placeholder="예: 1">
+        </div>
+
+        <button class="btn" onclick="startTest()">문제 풀기 시작</button>
+    </div>
+
+    <div id="quiz-section" class="hidden">
+        <div class="quiz-header">
+            <span id="info-display" style="font-weight: bold;">단원 정보</span>
+            <span class="timer" id="timer-display">소요 시간: 00:00</span>
+        </div>
+        
+        <div class="img-box">
+            <img id="question-img" src="" alt="문제 이미지">
+        </div>
+        
+        <div class="options-container" id="options-container">
+            </div>
+
+        <button class="btn" onclick="checkAnswer()">정답 확인</button>
+        <button class="btn btn-secondary" onclick="goHome()">처음으로</button>
+    </div>
+
+    <div id="result-section" class="hidden">
+        <div id="result-message" class="result-box">정답 여부 표시</div>
+        <div id="time-taken" class="time-info">최종 소요 시간: 00:00</div>
+        
+        <hr>
+        <h3>💡 해설</h3>
+        <div class="img-box">
+            <img id="explanation-img" src="" alt="해설 이미지">
+        </div>
+        
+        <button class="btn" onclick="goHome()">메인으로 돌아가기</button>
+    </div>
+</div>
+
+<script>
+    // [데이터 정의] 규칙 기반 파일명을 가진 문제 데이터베이스
+    // 고유 id는 직접 선택(manual) 시 호출하기 위한 번호입니다.
+    const problems = [
+        { 
+            id: 1, 
+            chapter: "banana", 
+            num: 1, 
+            difficulty: "easy", 
+            questionImg: "banana_1_easy.png", 
+            explanationImg: "banana_1_easy_exp.png",
+            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
+            answer: 3 
+        },
+        { 
+            id: 2, 
+            chapter: "banana", 
+            num: 2, 
+            difficulty: "hard", 
+            questionImg: "banana_2_hard.png", 
+            explanationImg: "banana_2_hard_exp.png",
+            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
+            answer: 5 
+        },
+        { 
+            id: 3, 
+            chapter: "apple", 
+            num: 1, 
+            difficulty: "easy", 
+            questionImg: "apple_1_easy.png", 
+            explanationImg: "apple_1_easy_exp.png",
+            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
+            answer: 1 
+        },
+        { 
+            id: 4, 
+            chapter: "apple", 
+            num: 2, 
+            difficulty: "hard", 
+            questionImg: "apple_2_hard.png", 
+            explanationImg: "apple_2_hard_exp.png",
+            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
+            answer: 2 
+        }
+    ];
+
+    let currentProblem = null;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    // 출제 방식 라디오 버튼 변경 이벤트 감지
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            document.getElementById('chapter-select-box').classList.add('hidden');
+            document.getElementById('manual-select-box').classList.add('hidden');
+            
+            if(e.target.value === 'chapter-random') {
+                document.getElementById('chapter-select-box').classList.remove('hidden');
+            } else if(e.target.value === 'manual') {
+                document.getElementById('manual-select-box').classList.remove('hidden');
+            }
+        });
+    });
+
+    // 타이머 구동 함수
+    function startTimer() {
+        secondsElapsed = 0;
+        document.getElementById('timer-display').innerText = "소요 시간: 00:00";
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            document.getElementById('timer-display').innerText = `소요 시간: ${formatTime(secondsElapsed)}`;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function formatTime(totalSeconds) {
+        let m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        let s = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    // 조건에 따른 문제 추출 및 시작
+    function startTest() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        let selectedProblem = null;
+
+        if (mode === 'full-random') {
+            selectedProblem = problems[Math.floor(Math.random() * problems.length)];
+        } 
+        else if (mode === 'chapter-random') {
+            const selectedChapter = document.getElementById('chapter-select').value;
+            const filtered = problems.filter(p => p.chapter === selectedChapter);
+            if(filtered.length === 0) { alert("해당 단원에 등록된 문제가 없습니다."); return; }
+            selectedProblem = filtered[Math.floor(Math.random() * filtered.length)];
+        } 
+        else if (mode === 'manual') {
+            const targetId = parseInt(document.getElementById('manual-id').value);
+            selectedProblem = problems.find(p => p.id === targetId);
+            if(!selectedProblem) { alert("존재하지 않는 문제 ID입니다. 데이터 배열을 확인해주세요."); return; }
+        }
+
+        currentProblem = selectedProblem;
+        renderProblem();
+    }
+
+    // 화면에 문제 출력
+    function renderProblem() {
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('result-section').classList.add('hidden');
+        document.getElementById('quiz-section').classList.remove('hidden');
+
+        // 상단 정보 표기 (단원명, 단원별 번호, 난이도 배지)
+        const badgeClass = currentProblem.difficulty === 'easy' ? 'badge-easy' : 'badge-hard';
+        const difficultyKor = currentProblem.difficulty === 'easy' ? '쉬움' : '어려움';
+        
+        document.getElementById('info-display').innerHTML = 
+            `ID: ${currentProblem.id} | [${currentProblem.chapter.toUpperCase()}] ${currentProblem.num}번 <span class="badge ${badgeClass}">${difficultyKor}</span>`;
+        
+        // 이미지 및 선지 바인딩
+        document.getElementById('question-img').src = currentProblem.questionImg;
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = ''; 
+
+        currentProblem.options.forEach((opt, index) => {
+            const optionNum = index + 1;
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            label.innerHTML = `<input type="radio" name="user-choice" value="${optionNum}"> <b>(${optionNum})</b> ${opt}`;
+            optionsContainer.appendChild(label);
+        });
+
+        startTimer();
+    }
+
+    // 정답 여부 및 소요 시간 체크
+    function checkAnswer() {
+        const selected = document.querySelector('input[name="user-choice"]:checked');
+        if (!selected) {
+            alert("선지 중에서 정답을 하나 선택해주세요!");
+            return;
+        }
+
+        stopTimer();
+        const userAnswer = parseInt(selected.value);
+        const isCorrect = (userAnswer === currentProblem.answer);
+
+        document.getElementById('quiz-section').classList.add('hidden');
+        document.getElementById('result-section').classList.remove('hidden');
+
+        // 정오답 결과 바인딩
+        const resultMessage = document.getElementById('result-message');
+        if (isCorrect) {
+            resultMessage.innerText = "⭕ 정답입니다!";
+            resultMessage.className = "result-box correct";
+        } else {
+            resultMessage.innerText = `❌ 오답입니다. (정답: ${currentProblem.answer}번)`;
+            resultMessage.className = "result-box incorrect";
+        }
+
+        // 최종 소요 시간 표기
+        document.getElementById('time-taken').innerText = `최종 소요 시간: ${formatTime(secondsElapsed)}`;
+        
+        // 해설 이미지 로드
+        document.getElementById('explanation-img').src = currentProblem.explanationImg;
+    }
+
+    // 초기 메인 화면 복귀
+    function goHome() {
+        stopTimer();
+        document.getElementById('result-section').classList.add('hidden');
+        document.getElementById('quiz-section').classList.add('hidden');
+        document.getElementById('setup-section').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
