@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문제 출제 프로그램</title>
+    <title>물리 문제 출제 프로그램</title>
     <style>
         /* 기본 스타일 및 레이아웃 */
         body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f4f6f9; color: #333; }
@@ -27,12 +27,14 @@
         .btn-secondary { background: #6c757d; }
         .btn-secondary:hover { background: #5a6268; }
         
-        /* 상단 상태창 (타이머 등) */
+        /* 상단 상태창 및 난이도별 배지 */
         .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
         .timer { font-size: 16px; font-weight: bold; color: #dc3545; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; display: inline-block; margin-left: 5px; }
         .badge-easy { background-color: #28a745; }
-        .badge-hard { background-color: #dc3545; }
+        .badge-mid { background-color: #ffc107; color: #333 !important; }
+        .badge-hard { background-color: #fd7e14; }
+        .badge-extreme { background-color: #6f42c1; }
         
         /* 결과 화면 */
         .result-box { text-align: center; font-size: 22px; font-weight: bold; margin: 20px 0; padding: 15px; border-radius: 6px; }
@@ -50,7 +52,7 @@
 
 <div class="container">
     <div id="setup-section">
-        <h1>📝 문제 출제 시스템</h1>
+        <h1>📝 물리 문제 풀이 시스템</h1>
         
         <div class="setting-group">
             <label>출제 방식 선택</label><br>
@@ -62,14 +64,18 @@
         <div id="chapter-select-box" class="setting-group hidden">
             <label for="chapter-select">단원 선택</label>
             <select id="chapter-select" class="select-input">
-                <option value="banana">바나나 (banana)</option>
-                <option value="apple">사과 (apple)</option>
+                <option value="등군법">등군법</option>
+                <option value="힘군법">힘군법</option>
+                <option value="운충">운충 (운동량과 충격량)</option>
+                <option value="역에보">역에보 (역학적 에너지 보존)</option>
+                <option value="점전하">점전하</option>
+                <option value="자선장">자선장</option>
             </select>
         </div>
 
         <div id="manual-select-box" class="setting-group hidden">
-            <label for="manual-id">문제 고유 ID 입력 (숫자)</label>
-            <input type="number" id="manual-id" class="select-input" min="1" placeholder="예: 1">
+            <label for="manual-id">문제 고유 ID 입력 (1 ~ 8)</label>
+            <input type="number" id="manual-id" class="select-input" min="1" max="8" placeholder="예: 1">
         </div>
 
         <button class="btn" onclick="startTest()">문제 풀기 시작</button>
@@ -107,48 +113,88 @@
 </div>
 
 <script>
-    // [데이터 정의] 규칙 기반 파일명을 가진 문제 데이터베이스
-    // 고유 id는 직접 선택(manual) 시 호출하기 위한 번호입니다.
+    // [데이터 정의] 업로드된 이미지 파일 및 선지 데이터 매핑
+    // ※ 정답(answer) 정보는 임시로 1로 세팅되어 있으니, 추후 실제 정답 번호(1~5)로 수정하여 사용하세요.
     const problems = [
         { 
             id: 1, 
-            chapter: "banana", 
+            chapter: "등군법", 
             num: 1, 
-            difficulty: "easy", 
-            questionImg: "banana_1_easy.png", 
-            explanationImg: "banana_1_easy_exp.png",
-            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
-            answer: 3 
+            difficulty: "mid", 
+            questionImg: "등군법_1_mid.png", 
+            explanationImg: "등군법_1_mid_exp.png",
+            options: ["9/4", "3/2", "7/6", "8/7", "8/9"], 
+            answer: 1 
         },
         { 
             id: 2, 
-            chapter: "banana", 
-            num: 2, 
-            difficulty: "hard", 
-            questionImg: "banana_2_hard.png", 
-            explanationImg: "banana_2_hard_exp.png",
-            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
-            answer: 5 
+            chapter: "힘군법", 
+            num: 1, 
+            difficulty: "mid", 
+            questionImg: "힘군법_1_mid.png", 
+            explanationImg: "힘군법_1_mid_exp.png",
+            options: ["2m", "3m", "4m", "5m", "6m"], 
+            answer: 1 
         },
         { 
             id: 3, 
-            chapter: "apple", 
-            num: 1, 
-            difficulty: "easy", 
-            questionImg: "apple_1_easy.png", 
-            explanationImg: "apple_1_easy_exp.png",
-            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
+            chapter: "힘군법", 
+            num: 2, 
+            difficulty: "mid", 
+            questionImg: "힘군법_2_mid.png", 
+            explanationImg: "힘군법_2_mid_exp.png",
+            options: ["ㄴ", "ㄷ", "ㄱ, ㄴ", "ㄱ, ㄷ", "ㄱ, ㄴ, ㄷ"], 
             answer: 1 
         },
         { 
             id: 4, 
-            chapter: "apple", 
+            chapter: "운충", 
+            num: 1, 
+            difficulty: "mid", 
+            questionImg: "운충_1_mid.png", 
+            explanationImg: "운충_1_mid_exp.png",
+            options: ["ㄱ", "ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄱ, ㄴ, ㄷ"], 
+            answer: 1 
+        },
+        { 
+            id: 5, 
+            chapter: "역에보", 
+            num: 1, 
+            difficulty: "extreme", 
+            questionImg: "역에보_1_extreme.png", 
+            explanationImg: "역에보_1_extreme_exp.png",
+            options: ["16/9 h", "2h", "20/9 h", "7/3 h", "8/3 h"], 
+            answer: 1 
+        },
+        { 
+            id: 6, 
+            chapter: "역에보", 
             num: 2, 
-            difficulty: "hard", 
-            questionImg: "apple_2_hard.png", 
-            explanationImg: "apple_2_hard_exp.png",
-            options: ["1번 선지", "2번 선지", "3번 선지", "4번 선지", "5번 선지"], 
-            answer: 2 
+            difficulty: "mid", 
+            questionImg: "역에보_2_mid.png", 
+            explanationImg: "역에보_2_mid_exp.png",
+            options: ["3/2 h", "5/3 h", "7/4 h", "9/5 h", "11/6 h"], 
+            answer: 1 
+        },
+        { 
+            id: 7, 
+            chapter: "점전하", 
+            num: 1, 
+            difficulty: "mid", 
+            questionImg: "점전하_1_mid.png", 
+            explanationImg: "점전하_1_mid_exp.png",
+            options: ["ㄱ", "ㄴ", "ㄷ", "ㄱ, ㄴ", "ㄴ, ㄷ"], 
+            answer: 1 
+        },
+        { 
+            id: 8, 
+            chapter: "자선장", 
+            num: 1, 
+            difficulty: "mid", 
+            questionImg: "자선장_1_mid.png", 
+            explanationImg: "자선장_1_mid_exp.png",
+            options: ["2", "3", "4", "5", "6"], 
+            answer: 1 
         }
     ];
 
@@ -207,7 +253,7 @@
         else if (mode === 'manual') {
             const targetId = parseInt(document.getElementById('manual-id').value);
             selectedProblem = problems.find(p => p.id === targetId);
-            if(!selectedProblem) { alert("존재하지 않는 문제 ID입니다. 데이터 배열을 확인해주세요."); return; }
+            if(!selectedProblem) { alert("존재하지 않는 문제 ID입니다. 1~8 사이의 숫자를 입력해주세요."); return; }
         }
 
         currentProblem = selectedProblem;
@@ -220,12 +266,16 @@
         document.getElementById('result-section').classList.add('hidden');
         document.getElementById('quiz-section').classList.remove('hidden');
 
-        // 상단 정보 표기 (단원명, 단원별 번호, 난이도 배지)
-        const badgeClass = currentProblem.difficulty === 'easy' ? 'badge-easy' : 'badge-hard';
-        const difficultyKor = currentProblem.difficulty === 'easy' ? '쉬움' : '어려움';
+        // 난이도 텍스트 및 스타일 매핑
+        let difficultyKor = "보통";
+        let badgeClass = "badge-mid";
+        
+        if (currentProblem.difficulty === 'easy') { difficultyKor = "쉬움"; badgeClass = "badge-easy"; }
+        else if (currentProblem.difficulty === 'hard') { difficultyKor = "어려움"; badgeClass = "badge-hard"; }
+        else if (currentProblem.difficulty === 'extreme') { difficultyKor = "최상"; badgeClass = "badge-extreme"; }
         
         document.getElementById('info-display').innerHTML = 
-            `ID: ${currentProblem.id} | [${currentProblem.chapter.toUpperCase()}] ${currentProblem.num}번 <span class="badge ${badgeClass}">${difficultyKor}</span>`;
+            `ID: ${currentProblem.id} | [${currentProblem.chapter}] ${currentProblem.num}번 <span class="badge ${badgeClass}">${difficultyKor}</span>`;
         
         // 이미지 및 선지 바인딩
         document.getElementById('question-img').src = currentProblem.questionImg;
